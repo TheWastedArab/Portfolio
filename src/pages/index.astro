@@ -1,0 +1,159 @@
+---
+import '../styles/global.css';
+import { site, categories, projects, experience, education, skills } from '../data/site';
+
+const realProjects = projects.filter((project) => !project.sample);
+const usedCategories = categories.filter((category) =>
+  realProjects.some((project) => project.category === category)
+);
+
+const contactLinks = [
+  { label: 'Email', href: site.email && `mailto:${site.email}` },
+  { label: 'GitHub', href: site.github },
+  { label: 'LinkedIn', href: site.linkedin },
+].filter((link) => link.href);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{site.name} | Portfolio</title>
+    <meta name="description" content={`${site.name}: ${site.role}. ${site.intro}`} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;600&display=swap"
+    />
+  </head>
+  <body>
+    <header class="top wrap">
+      <span class="brand">{site.shortName}</span>
+      <nav aria-label="Main">
+        {realProjects.length > 0 && <a href="#work">Work</a>}
+        <a href="#experience">Experience</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <main class="wrap">
+      <div class="hero">
+        <p class="eyebrow">{site.role}</p>
+        <h1>{site.name}</h1>
+        <p class="lede">{site.intro}</p>
+      </div>
+
+      <section id="about">
+        <h2>About</h2>
+        <p class="prose">{site.about}</p>
+      </section>
+
+      {
+        realProjects.length > 0 && (
+          <section id="work">
+            <h2>Selected work</h2>
+            <div class="filters" role="group" aria-label="Filter projects by category">
+              <button type="button" data-filter="All" aria-pressed="true">
+                All
+              </button>
+              {usedCategories.map((category) => (
+                <button type="button" data-filter={category} aria-pressed="false">
+                  {category}
+                </button>
+              ))}
+            </div>
+            <div class="cards">
+              {realProjects.map((project) => (
+                <article class="card" data-category={project.category}>
+                  <div class="card-meta">
+                    <span>{project.category}</span>
+                  </div>
+                  <h3>{project.title}</h3>
+                  <p>{project.description}</p>
+                  <p class="tech">{project.tech.join(' · ')}</p>
+                  {project.link && <a href={project.link}>View project</a>}
+                </article>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <section id="experience">
+        <div class="columns">
+          <div>
+            <h2>Experience</h2>
+            {
+              experience.map((item) => (
+                <p class="entry">
+                  <strong>{item.title}</strong>
+                  <span>{item.period}</span>
+                </p>
+              ))
+            }
+          </div>
+          <div>
+            <h2>Education</h2>
+            {
+              education.map((item) => (
+                <p class="entry">
+                  <strong>{item.title}</strong>
+                  <span>{item.detail}</span>
+                </p>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section id="skills">
+        <h2>Skills</h2>
+        <dl class="skills">
+          {
+            skills.map((skill) => (
+              <div>
+                <dt>{skill.group}</dt>
+                <dd>{skill.items.join(', ')}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </section>
+
+      <section id="contact">
+        <h2>Contact</h2>
+        <p class="prose">Have a project in mind? I'd be glad to hear about it.</p>
+        {
+          contactLinks.length > 0 && (
+            <p class="links">
+              {contactLinks.map((link) => (
+                <a href={link.href}>{link.label}</a>
+              ))}
+            </p>
+          )
+        }
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">© {new Date().getFullYear()} {site.name}</div>
+    </footer>
+
+    <script>
+      const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+      const cards = document.querySelectorAll<HTMLElement>('.card');
+
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const filter = button.dataset.filter;
+          buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+          cards.forEach((card) => {
+            card.hidden = filter !== 'All' && card.dataset.category !== filter;
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
