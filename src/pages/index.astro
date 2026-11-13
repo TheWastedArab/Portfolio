@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import SplitText from '../components/reactbits/SplitText';
+import AboutReveal from '../components/AboutReveal';
 import { site, categories, projects, experience, education, skills } from '../data/site';
 
 const realProjects = projects.filter((project) => !project.sample);
@@ -25,7 +27,7 @@ const contactLinks = [
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;600&display=swap"
     />
   </head>
   <body>
@@ -40,20 +42,29 @@ const contactLinks = [
 
     <main class="wrap">
       <div class="hero">
-        <p class="eyebrow">{site.role}</p>
-        <h1>{site.name}</h1>
-        <p class="lede">{site.intro}</p>
+        <p class="eyebrow" data-reveal>{site.role}</p>
+        <SplitText
+          client:load
+          text={site.name}
+          tag="h1"
+          textAlign="left"
+          splitType="chars"
+          delay={30}
+          duration={0.9}
+          trigger="load"
+        />
+        <p class="lede" data-reveal>{site.intro}</p>
       </div>
 
       <section id="about">
-        <h2>About</h2>
-        <p class="prose">{site.about}</p>
+        <h2 data-reveal>About</h2>
+        <AboutReveal client:visible text={site.about} />
       </section>
 
       {
         realProjects.length > 0 && (
           <section id="work">
-            <h2>Selected work</h2>
+            <h2 data-reveal>Selected work</h2>
             <div class="filters" role="group" aria-label="Filter projects by category">
               <button type="button" data-filter="All" aria-pressed="true">
                 All
@@ -66,7 +77,7 @@ const contactLinks = [
             </div>
             <div class="cards">
               {realProjects.map((project) => (
-                <article class="card" data-category={project.category}>
+                <article class="card" data-reveal data-category={project.category}>
                   <div class="card-meta">
                     <span>{project.category}</span>
                   </div>
@@ -84,10 +95,10 @@ const contactLinks = [
       <section id="experience">
         <div class="columns">
           <div>
-            <h2>Experience</h2>
+            <h2 data-reveal>Experience</h2>
             {
               experience.map((item) => (
-                <p class="entry">
+                <p class="entry" data-reveal>
                   <strong>{item.title}</strong>
                   <span>{item.period}</span>
                 </p>
@@ -95,10 +106,10 @@ const contactLinks = [
             }
           </div>
           <div>
-            <h2>Education</h2>
+            <h2 data-reveal>Education</h2>
             {
               education.map((item) => (
-                <p class="entry">
+                <p class="entry" data-reveal>
                   <strong>{item.title}</strong>
                   <span>{item.detail}</span>
                 </p>
@@ -109,11 +120,11 @@ const contactLinks = [
       </section>
 
       <section id="skills">
-        <h2>Skills</h2>
+        <h2 data-reveal>Skills</h2>
         <dl class="skills">
           {
             skills.map((skill) => (
-              <div>
+              <div data-reveal>
                 <dt>{skill.group}</dt>
                 <dd>{skill.items.join(', ')}</dd>
               </div>
@@ -123,8 +134,8 @@ const contactLinks = [
       </section>
 
       <section id="contact">
-        <h2>Contact</h2>
-        <p class="prose">Have a project in mind? I'd be glad to hear about it.</p>
+        <h2 data-reveal>Contact</h2>
+        <p class="prose" data-reveal>Have a project in mind? I'd be glad to hear about it.</p>
         {
           contactLinks.length > 0 && (
             <p class="links">
@@ -142,6 +153,8 @@ const contactLinks = [
     </footer>
 
     <script>
+      import '../scripts/motion';
+
       const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
       const cards = document.querySelectorAll<HTMLElement>('.card');
 
